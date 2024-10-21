@@ -1,0 +1,57 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_tags %}
+
+{% block title %}
+<hr>
+<h1 class="page-title">Все объявления:</h1>
+<hr>
+
+{% endblock title %}
+
+{% block content %}
+    <p>Вы можете стать подписчиком интересующих вас категорий объявлений и получать оповещения о создании новых обьявлений по электронной почте!</p>
+    <p>Для этого перейдите на страицу категорий и оформите подписку на интересуюзие категории:</p>
+    <a class="btn btn-primary", href="{% url 'category_list' %}">К списку категорий</a>
+    <hr>
+    <form method="GET">
+        {{ filter.form }}
+        <br>
+        <input type="submit" value="Найти">
+    </form>
+    <hr>
+    {% for post in posts %}
+        <div style="border: 2px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 20px; background-color: #f8f9fa;">
+            <p>Автор: {{ post.post_author }}  {{ post.date|date:"d E Y, H:i" }}</p>
+            <p>Категория: {{ post.category.name }} </p>
+            <h4><a href="{% url 'post_detail' post.pk %}" style="text-decoration: none; color: black;">{{ post.title }}</a></h4>
+            <span style="font-size: 22px;">{{ post.text|truncatechars:25|safe }}</span>
+
+
+
+
+        </div>
+    {% endfor %}
+<hr>
+{% if is_paginated %}
+    <!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+    {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}">Первая страница</a>
+        <a href="?{% url_replace page=page_obj.previous_page_number %}">Назад</a>
+    {% endif %}
+
+    <!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <a>{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?{% url_replace page=num %}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+    {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">Вперёд</a>
+        <a href="?{% url_replace page=page_obj.paginator.num_pages %}">Последняя страница</a>
+    {% endif %}
+{% endif %}
+{% endblock content %}

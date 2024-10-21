@@ -1,0 +1,53 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+<h3>Личный кабинет пользователя:</h3>
+<h1>{{ user.username }}</h1>
+
+<hr>
+<a class="btn btn-primary", href="{% url 'post_create' %}">Добавить объявление</a>
+{% endblock title %}
+
+{% block content %}
+<h4>Выберите объявление:</h4>
+<br>
+<form action="" method="get">
+    {{ filterset.form }}
+    <br>
+    <input type="submit" value="Найти">
+</form>
+<br>
+<a class="btn btn-dark", href="{% url 'profile' %}">Сбросить фильтр</a>
+<br>
+
+{% if replays %}
+
+{% for replay in replays %}
+    {% if not replay.status %}
+        <h3>Отклики, ожидающие подтверждения:</h3>
+        <div style="border: 2px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 20px; background-color: #f8f9fa;">
+            <p>{{ replay.replay_author|safe }} {{ replay.date|date:"d E Y, H:i" }} </p>
+            <hr>
+            {{ replay.text|safe }}
+            <hr>
+            <!-- replay.pk для того, что бы было понятно с каким откликом работать -->
+            <a class="btn btn-success", href="{% url 'accept_replay' replay.pk %}">Принять отклик</a>
+            <a class="btn btn-danger", href="{% url 'delete_replay' replay.pk %}">Удалить отклик</a>
+        </div>
+    {% endif %}
+{% endfor %}
+<h3>Принятые отклики:</h3>
+{% for replay in replays %}
+    {% if replay.status %}
+        <div style="border: 2px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 20px; background-color: #f8f9fa;">
+            <p>{{ replay.replay_author|safe }} {{ replay.date|date:"d E Y, H:i" }} </p>
+            <hr>
+            {{ replay.text|safe }}
+            <hr>
+            <a class="btn btn-danger", href="{% url 'delete_replay' replay.pk %}">Удалить отклик</a>
+        </div>
+    {% endif %}
+{% endfor %}
+{% endif %}
+
+{% endblock content %}

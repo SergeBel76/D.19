@@ -1,0 +1,44 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+<hr>
+<h1 class="page-title">Информация об объявлении:</h1>
+<hr>
+{% endblock title %}
+
+{% block content %}
+
+    <div style="border: 2px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 20px; background-color: #f8f9fa;">
+        <p>Автор: {{ post.post_author }}  {{ post.date|date:"d E Y, H:i" }}</p>
+        <p>Категория: {{ post.category.name }}</p>
+        <span style="font-size: 22px;">{{ post.text|safe }}</span>
+
+
+    </div>
+    <hr>
+
+     <a class="btn btn-primary", href="{% url 'post_update' post.id %}">Изменить</a>
+
+<!-- 'replay_create' post.id для того, что бы передать айди поста для создания отклика -->
+ <!--<a class="btn btn-primary", href="">Добавить отклик</a>-->
+{% if user.is_authenticated %}
+<h1>Добавить отклик</h1>
+            <hr>
+            <form method="post" style="max-width: 1200px; margin: 0 auto;">
+                {% csrf_token %}
+                    <div style="margin-bottom: 10px;">
+                        {{ replay_form.text }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить отклик</button>
+            </form>
+{% else %}
+    <p>Авторизуйтесь, что бы оставить отклик:</p>
+    <a class="btn btn-primary", href="{% url 'profile' %}">Войти</a>
+{% endif %}
+    {% if post.replay_set.all %}
+        <h4 style="margin-top: 20px">Все отклики:</h4>
+        {% for replay in post.replay_set.all %}
+            <p><u>Автор отклика:</u> {{ replay.replay_author }} <u>Текст отклика:</u> {{ replay.text }} </p>
+        {% endfor %}
+    {% endif %}
+{% endblock content %}
